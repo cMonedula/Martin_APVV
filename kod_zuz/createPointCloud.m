@@ -42,9 +42,19 @@ for i=1:sourceCount
 %     folderContent=dir([string(folderPath)+'\*.dcm']); %nacita si obsah priecinku so vstupnymi snimkami
 %     folderContent(1:2)=[]; %vymaze prve dva zbytocne prvky zo zoznamu suborov (. a ..)
 %     snimkaCount=length(folderContent); %zistime kolko toho mame v priecinku
-    [V,spatial]=dicomreadVolume(folderPath(i));
-    squeeze(V);
-    vol=volshow(V);
+    sourceTable(i) = dicomCollection(folderPath(i));
+    
+    V(i) = dicomreadVolume(sourceTable(i),"s1",MakeIsotropic=true);
+    V(i) = squeeze(V(i));
+
+    intensity = [0 20 40 120 220 1024];
+    alpha = [0 0 0.15 0.3 0.38 0.5];
+    color = ([0 0 0; 43 0 0; 103 37 20; 199 155 97; 216 213 201; 255 255 255])/255;
+    queryPoints = linspace(min(intensity),max(intensity),256);
+    amap = interp1(intensity,alpha,queryPoints)';
+    cmap = interp1(intensity,color,queryPoints);
+
+    vol=volshow(V(i),Colormap=cmap,Alphamap=amap);
 end
 
 % for por=1:snimkaCount
