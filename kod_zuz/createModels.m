@@ -75,7 +75,8 @@ if volumeCount~=sourceCount||recalc==true
     for i=1:sourceCount
         if contains(sourceContent(i).name,'3D')
             single=dicomreadVolume(sourceTable,char(sourceTable.Properties.RowNames(i)),'MakeIsotropic',true);
-            single=squeeze(single);
+            single=cast(squeeze(single),"single");
+            single=normalize(single,"scale");
             niftiwrite(single,string(["niiData\"+outputName(i)+".nii"]));
             % single=niftiread(string(["niiData\"+outputName(i)]));
             view=volshow(single,"Colormap",cmap,"Alphamap",amap);

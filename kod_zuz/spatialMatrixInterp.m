@@ -3,10 +3,15 @@ function [interpVolume] = spatialMatrixInterp(axial,coronal,sagital,cor_address,
 %trojrozmerne matice
 %   Detailed explanation goes here
 %% registracia koronalneho a sagitalneho rezu (trva dlho! obcas az ~25 min)
+%normalizacia
+% axial=normalize(cast(axial,"double"),"scale");
+% coronal=normalize(cast(coronal,"double"),"scale");
+% sagital=normalize(cast(sagital,"double"),"scale");
+
 if needsRegistration==true
     [optimizer,metric]=imregconfig('monomodal');
-    coronal_reg=imregister(coronal,axial,'affine',optimizer,metric);
-    sagital_reg=imregister(sagital,axial,'affine',optimizer,metric);
+    coronal_reg=imregister(coronal,axial,'affine',optimizer,metric,'DisplayOptimization',true);
+    sagital_reg=imregister(sagital,axial,'affine',optimizer,metric,'DisplayOptimization',true);
     niftiwrite(coronal_reg,cor_address);
     niftiwrite(sagital_reg,sag_address);
 end
@@ -27,10 +32,11 @@ max_z=max([size(axial,3),size(coronal,3),size(sagital,3)]);
 [x,y,z]=meshgrid(1:res:max_x,1:res:max_y,1:res:max_z);
 
 %%samotna interpolacia
-interp_axial=interp3(x_ax,y_ax,z_ax,cast(axial,'double'),x,y,z,'makima');
-interp_coronal=interp3(x_cor,y_cor,z_cor,cast(coronal,'double'),x,y,z,'makima');
-interp_sagital=interp3(x_sag,y_sag,z_sag,cast(sagital,'double'),x,y,z,'makima');
+interp_axial=interp3(x_ax,y_ax,z_ax,cast(axial,"double"),x,y,z,'makima');
+interp_coronal=interp3(x_cor,y_cor,z_cor,cast(coronal,"double"),x,y,z,'makima');
+interp_sagital=interp3(x_sag,y_sag,z_sag,cast(sagital,"double"),x,y,z,'makima');
 
 interpVolume=(interp_axial+interp_coronal+interp_sagital)/3;
+interpVolume=normalize(interpVolume,"scale");
 end
 
