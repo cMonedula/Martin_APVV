@@ -4,7 +4,8 @@
 
 clear all; close all;
 
-recalc=false; %premenna ktora urcuje ci data pocitame znova!!!
+recalc=true; %premenna ktora urcuje ci data pocitame znova!!!
+needsRegistration=true; %debug premenna na preskocenie registracie
 
 %%uvodny check priecinkov na data
 status=0;
@@ -102,7 +103,7 @@ if volumeCount~=sourceCount||recalc==true
                 break;
             end
             if exist('axial','var')&&exist('coronal','var')&&exist('sagital','var')
-                interpVolume=spatialMatrixInterp(coronal,axial,sagital,cor_address,sag_address);
+                interpVolume=spatialMatrixInterp(coronal,axial,sagital,cor_address,sag_address,needsRegistration);
 %                 view_a=volshow(axial,"Colormap",cmap,"Alphamap",amap);
 %                 view_c=volshow(cor_address,"Colormap",cmap,"Alphamap",amap);
 %                 view_s=volshow(sag_address,"Colormap",cmap,"Alphamap",amap);
