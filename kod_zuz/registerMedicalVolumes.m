@@ -16,7 +16,7 @@ fixedIntrinsicToWorld = intrinsicToWorldMapping(fixedRef).A;
 movingIntrinsicToWorld = intrinsicToWorldMapping(movingRef).A;
 
 % Coarse alignment or resampling of the volume
-resampledMoving = resampleAffine(MOVING,fixedRef,WorldTransform=affinetform3d(initialTransform),FillValue=min(MOVING.Voxels(:)));
+resampledMoving = resampleAffine(MOVING,fixedRef,'WorldTransform',affinetform3d(initialTransform),'FillValue',min(MOVING.Voxels(:)));
 movIntrinsicTofixedIntrinsic = fixedIntrinsicToWorld \ (initialTransform * movingIntrinsicToWorld);
 
 % Normalize volume
@@ -30,11 +30,11 @@ optimizer.MaximumIterations = 100;
 optimizer.RelaxationFactor = 0.500000;
 
 % Finer alignment using imregtform
-tformAlgo = imregtform(resampledMoving.Voxels,FIXED.Voxels,'rigid',optimizer,metric,InitialTransformation=affinetform3d(initialTransform),DisplayOptimization = 1,PyramidLevels = 3);
+tformAlgo = imregtform(resampledMoving.Voxels,FIXED.Voxels,'rigid',optimizer,metric,'InitialTransformation',affinetform3d(initialTransform),'DisplayOptimization',1,'PyramidLevels',3);
 tIntrinsicComposite = tformAlgo.A * movIntrinsicTofixedIntrinsic;
 tMovingWorldToFixedWorld =  fixedIntrinsicToWorld *  tIntrinsicComposite/movingIntrinsicToWorld;
 tform = affinetform3d(tMovingWorldToFixedWorld);
-regVoxels = imwarp(MOVING.Voxels, affinetform3d(tIntrinsicComposite),OutputView =imref3d(FIXED.VolumeGeometry.VolumeSize),FillValue=min(MOVING.Voxels(:)));
+regVoxels = imwarp(MOVING.Voxels, affinetform3d(tIntrinsicComposite),'OutputView',imref3d(FIXED.VolumeGeometry.VolumeSize),'FillValue',min(MOVING.Voxels(:)));
 regVol = medicalVolume(regVoxels,fixedRef);
 
 

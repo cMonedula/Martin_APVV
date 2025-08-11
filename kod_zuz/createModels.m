@@ -39,8 +39,8 @@ end
 sourceTable = dicomCollection(folderPath,"IncludeSubfolders",true);
 
 for j=1:sourceCount
-sourceTable.Filenames{j,1}(1)=[]; %znizime antialiasing eliminaciou prvej a poslednej snimky
-sourceTable.Filenames{j,1}(sourceTable.Frames(j)-1)=[]; %znizime antialiasing eliminaciou prvej a poslednej snimky
+sourceTable.Filenames{j,1}(1)=[]; %znizime aliasing eliminaciou prvej a poslednej snimky
+sourceTable.Filenames{j,1}(sourceTable.Frames(j)-1)=[]; %znizime aliasing eliminaciou prvej a poslednej snimky
 sourceTable.Frames(j)=sourceTable.Frames(j)-2; %odoberieme z poctu snimok tie dve
 end
 
@@ -69,21 +69,21 @@ volumeCount=length(volumeList);
 
 for i=1:volumeCount
     if contains(sourceContent(i).name,'3D')
-        single=dicomreadVolume(sourceTable,char(sourceTable.Properties.RowNames(i)),"MakeIsotropic",true);
+        single=dicomreadVolume(sourceTable,char(sourceTable.Properties.RowNames(i)),'MakeIsotropic',true);
         single=squeeze(single);
         % single=niftiread(string(["niiData\"+outputName(i)]));
         view=volshow(single,"Colormap",cmap,"Alphamap",amap);
     elseif contains(sourceContent(i).name,upper('SWI'))
         if contains(sourceContent(i).name,lower('axial'))
-            axial=dicomreadVolume(sourceTable,char(sourceTable.Properties.RowNames(i)),"MakeIsotropic",true);
+            axial=dicomreadVolume(sourceTable,char(sourceTable.Properties.RowNames(i)),'MakeIsotropic',true);
             axial=squeeze(axial);
             % axial=niftiread(string(["niiData\"+outputName(i)]));
         elseif contains(sourceContent(i).name,lower('coronal'))
-            coronal=dicomreadVolume(sourceTable,char(sourceTable.Properties.RowNames(i)),"MakeIsotropic",true);
+            coronal=dicomreadVolume(sourceTable,char(sourceTable.Properties.RowNames(i)),'MakeIsotropic',true);
             coronal=squeeze(coronal);
             % coronal=niftiread(string(["niiData\"+outputName(i)]));
         elseif contains(sourceContent(i).name,lower('sagital'))
-            sagital=dicomreadVolume(sourceTable,char(sourceTable.Properties.RowNames(i)),"MakeIsotropic",true);
+            sagital=dicomreadVolume(sourceTable,char(sourceTable.Properties.RowNames(i)),'MakeIsotropic',true);
             sagital=squeeze(sagital);
             % sagital=niftiread(string(["niiData\"+outputName(i)]));
         else
@@ -92,11 +92,12 @@ for i=1:volumeCount
             break;
         end
         if exist('axial','var')&&exist('coronal','var')&&exist('sagital','var')
-            coronal2=registerMedicalVolumes(coronal,axial);
-            sagital2=registerMedicalVolumes(sagital,axial);
+            [optimizer,metric]=imregconfig('monomodal');
+            coronal_reg=imregister(coronal,axial,'affine',optimizer,metric);
+            sagital_reg=imregister(sagital,axial,'affine',optimizer,metric);
             view=volshow(axial,"Colormap",cmap,"Alphamap",amap);
-            view=volshow(coronal2,"Colormap",cmap,"Alphamap",amap);
-            view=volshow(sagital2,"Colormap",cmap,"Alphamap",amap);
+            view=volshow(coronal_reg,"Colormap",cmap,"Alphamap",amap);
+            view=volshow(sagital_reg,"Colormap",cmap,"Alphamap",amap);
         end
     else
         fprintf("Nebolo mozne urcit o aky rez ide! Skontrolujte nazov priecinka a spustite spracovanie znovu.\nStlacte akukolvek klavesu pre pokracovanie.\n");
