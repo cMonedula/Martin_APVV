@@ -58,16 +58,16 @@ queryPoints = linspace(min(intensity),max(intensity),256);
 amap = interp1(intensity,alpha,queryPoints)';
 cmap = interp1(intensity,color,queryPoints);
 
-volumeList=dir('niiData'); %nacita si obsah priecinku so spracovanymi volume datami
-volumeList(1:2)=[]; %vymaze prve dva zbytocne prvky zo zoznamu priecinkov (. a ..)
-volumeCount=length(volumeList);
+% volumeList=dir('niiData'); %nacita si obsah priecinku so spracovanymi volume datami
+% volumeList(1:2)=[]; %vymaze prve dva zbytocne prvky zo zoznamu priecinkov (. a ..)
+% volumeCount=length(volumeList);
 
 % for i=1:sourceCount
 %     folderPath=string(volumeList(i).folder);
 %     outputName(i)=string(volumeList(i).name);
 % end
 
-for i=1:volumeCount
+for i=1:sourceCount
     if contains(sourceContent(i).name,'3D')
         single=dicomreadVolume(sourceTable,char(sourceTable.Properties.RowNames(i)),'MakeIsotropic',true);
         single=squeeze(single);
@@ -95,9 +95,9 @@ for i=1:volumeCount
             [optimizer,metric]=imregconfig('monomodal');
             coronal_reg=imregister(coronal,axial,'affine',optimizer,metric);
             sagital_reg=imregister(sagital,axial,'affine',optimizer,metric);
-            view=volshow(axial,"Colormap",cmap,"Alphamap",amap);
-            view=volshow(coronal_reg,"Colormap",cmap,"Alphamap",amap);
-            view=volshow(sagital_reg,"Colormap",cmap,"Alphamap",amap);
+            view_a=volshow(axial,"Colormap",cmap,"Alphamap",amap);
+            view_c=volshow(coronal_reg,"Colormap",cmap,"Alphamap",amap);
+            view_s=volshow(sagital_reg,"Colormap",cmap,"Alphamap",amap);
         end
     else
         fprintf("Nebolo mozne urcit o aky rez ide! Skontrolujte nazov priecinka a spustite spracovanie znovu.\nStlacte akukolvek klavesu pre pokracovanie.\n");
