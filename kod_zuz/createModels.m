@@ -62,10 +62,10 @@ volumeList=dir('niiData'); %nacita si obsah priecinku so spracovanymi volume dat
 volumeList(1:2)=[]; %vymaze prve dva zbytocne prvky zo zoznamu priecinkov (. a ..)
 volumeCount=length(volumeList);
 
-for i=1:sourceCount
-    folderPath=string(volumeList(i).folder);
-    outputName(i)=string(volumeList(i).name);
-end
+% for i=1:sourceCount
+%     folderPath=string(volumeList(i).folder);
+%     outputName(i)=string(volumeList(i).name);
+% end
 
 for i=1:volumeCount
     if contains(sourceContent(i).name,'3D')
@@ -92,11 +92,11 @@ for i=1:volumeCount
             break;
         end
         if exist('axial','var')&&exist('coronal','var')&&exist('sagital','var')
-            [regvol,coronal]=registerMedicalVolumes(coronal,axial);
-            [regvol2,sagital]=registerMedicalVolumes(sagital,axial);
+            coronal2=registerMedicalVolumes(coronal,axial);
+            sagital2=registerMedicalVolumes(sagital,axial);
             view=volshow(axial,"Colormap",cmap,"Alphamap",amap);
-            view=volshow(coronal,"Colormap",cmap,"Alphamap",amap);
-            view=volshow(sagital,"Colormap",cmap,"Alphamap",amap);
+            view=volshow(coronal2,"Colormap",cmap,"Alphamap",amap);
+            view=volshow(sagital2,"Colormap",cmap,"Alphamap",amap);
         end
     else
         fprintf("Nebolo mozne urcit o aky rez ide! Skontrolujte nazov priecinka a spustite spracovanie znovu.\nStlacte akukolvek klavesu pre pokracovanie.\n");
