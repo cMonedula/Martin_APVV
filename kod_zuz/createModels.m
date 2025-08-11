@@ -4,6 +4,8 @@
 
 clear all; close all;
 
+recalc=true; %premenna ktora urcuje ci data pocitame znova!!!
+
 %%uvodny check priecinkov na data
 status=0;
 while status==0
@@ -58,53 +60,63 @@ queryPoints = linspace(min(intensity),max(intensity),256);
 amap = interp1(intensity,alpha,queryPoints)';
 cmap = interp1(intensity,color,queryPoints);
 
-% volumeList=dir('niiData'); %nacita si obsah priecinku so spracovanymi volume datami
-% volumeList(1:2)=[]; %vymaze prve dva zbytocne prvky zo zoznamu priecinkov (. a ..)
-% volumeCount=length(volumeList);
+volumeList=dir('niiData'); %nacita si obsah priecinku so spracovanymi volume datami
+volumeList(1:2)=[]; %vymaze prve dva zbytocne prvky zo zoznamu priecinkov (. a ..)
+volumeCount=length(volumeList);
 
-% for i=1:sourceCount
-%     folderPath=string(volumeList(i).folder);
-%     outputName(i)=string(volumeList(i).name);
-% end
+for i=1:volumeCount
+    folderPath=string(volumeList(i).folder);
+    resultName(i)=string(volumeList(i).name);
+    resultName(i)=erase(resultName(i),".nii");
+end
 
-for i=1:sourceCount
-    if contains(sourceContent(i).name,'3D')
-        single=dicomreadVolume(sourceTable,char(sourceTable.Properties.RowNames(i)),'MakeIsotropic',true);
-        single=squeeze(single);
-        % single=niftiread(string(["niiData\"+outputName(i)]));
-        view=volshow(single,"Colormap",cmap,"Alphamap",amap);
-    elseif contains(sourceContent(i).name,upper('SWI'))
-        if contains(sourceContent(i).name,lower('axial'))
-            axial=dicomreadVolume(sourceTable,char(sourceTable.Properties.RowNames(i)),'MakeIsotropic',true);
-            axial=squeeze(axial);
-            % axial=niftiread(string(["niiData\"+outputName(i)]));
-        elseif contains(sourceContent(i).name,lower('coronal'))
-            coronal=dicomreadVolume(sourceTable,char(sourceTable.Properties.RowNames(i)),'MakeIsotropic',true);
-            coronal=squeeze(coronal);
-            % coronal=niftiread(string(["niiData\"+outputName(i)]));
-        elseif contains(sourceContent(i).name,lower('sagital'))
-            sagital=dicomreadVolume(sourceTable,char(sourceTable.Properties.RowNames(i)),'MakeIsotropic',true);
-            sagital=squeeze(sagital);
-            % sagital=niftiread(string(["niiData\"+outputName(i)]));
+if volumeCount~=sourceCount||recalc==true
+    for i=1:sourceCount
+        if contains(sourceContent(i).name,'3D')
+            single=dicomreadVolume(sourceTable,char(sourceTable.Properties.RowNames(i)),'MakeIsotropic',true);
+            single=squeeze(single);
+            niftiwrite(single,string(["niiData\"+outputName(i)+".nii"]));
+            % single=niftiread(string(["niiData\"+outputName(i)]));
+            view=volshow(single,"Colormap",cmap,"Alphamap",amap);
+        elseif contains(sourceContent(i).name,upper('SWI'))
+            if contains(sourceContent(i).name,lower('axial'))
+                axial=dicomreadVolume(sourceTable,char(sourceTable.Properties.RowNames(i)),'MakeIsotropic',true);
+                axial=squeeze(axial);
+                niftiwrite(axial,string(["niiData\"+outputName(i)+".nii"]));
+                % axial=niftiread(string(["niiData\"+outputName(i)]));
+            elseif contains(sourceContent(i).name,lower('coronal'))
+                coronal=dicomreadVolume(sourceTable,char(sourceTable.Properties.RowNames(i)),'MakeIsotropic',true);
+                coronal=squeeze(coronal);
+                niftiwrite(coronal,string(["niiData\"+outputName(i)+".nii"]));
+                cor_address=string(["niiData\"+outputName(i)+".nii"]);
+                % coronal=niftiread(string(["niiData\"+outputName(i)]));
+            elseif contains(sourceContent(i).name,lower('sagital'))
+                sagital=dicomreadVolume(sourceTable,char(sourceTable.Properties.RowNames(i)),'MakeIsotropic',true);
+                sagital=squeeze(sagital);
+                niftiwrite(sagital,string(["niiData\"+outputName(i)+".nii"]));
+                sag_address=string(["niiData\"+outputName(i)+".nii"]);
+                % sagital=niftiread(string(["niiData\"+outputName(i)]));
+            else
+                fprintf("Bolo najdene SWI zobrazenie, nebolo mozne urcit o aky rez ide! Skontrolujte nazov priecinka a spustite spracovanie znovu.\nStlacte akukolvek klavesu pre pokracovanie.\n");
+                pause;
+                break;
+            end
+            if exist('axial','var')&&exist('coronal','var')&&exist('sagital','var')
+                [optimizer,metric]=imregconfig('monomodal');
+                coronal_reg=imregister(coronal,axial,'affine',optimizer,metric);
+                sagital_reg=imregister(sagital,axial,'affine',optimizer,metric);
+                view_a=volshow(axial,"Colormap",cmap,"Alphamap",amap);
+                view_c=volshow(coronal_reg,"Colormap",cmap,"Alphamap",amap);
+                view_s=volshow(sagital_reg,"Colormap",cmap,"Alphamap",amap);
+                niftiwrite(coronal_reg,cor_address);
+                niftiwrite(sagital_reg,sag_address);
+            end
         else
-            fprintf("Bolo najdene SWI zobrazenie, nebolo mozne urcit o aky rez ide! Skontrolujte nazov priecinka a spustite spracovanie znovu.\nStlacte akukolvek klavesu pre pokracovanie.\n");
+            fprintf("Nebolo mozne urcit o aky rez ide! Skontrolujte nazov priecinka a spustite spracovanie znovu.\nStlacte akukolvek klavesu pre pokracovanie.\n");
             pause;
             break;
         end
-        if exist('axial','var')&&exist('coronal','var')&&exist('sagital','var')
-            [optimizer,metric]=imregconfig('monomodal');
-            coronal_reg=imregister(coronal,axial,'affine',optimizer,metric);
-            sagital_reg=imregister(sagital,axial,'affine',optimizer,metric);
-            view_a=volshow(axial,"Colormap",cmap,"Alphamap",amap);
-            view_c=volshow(coronal_reg,"Colormap",cmap,"Alphamap",amap);
-            view_s=volshow(sagital_reg,"Colormap",cmap,"Alphamap",amap);
-        end
-    else
-        fprintf("Nebolo mozne urcit o aky rez ide! Skontrolujte nazov priecinka a spustite spracovanie znovu.\nStlacte akukolvek klavesu pre pokracovanie.\n");
-        pause;
-        break;
     end
-        
 end
 %     nazov_suboru=sprintf('/test_export/test%d.png',por);
 %     imwrite(cast(snimka,"uint16"),[pwd nazov_suboru],'Alpha',cast(maska,"double"))
