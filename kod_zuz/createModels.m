@@ -4,7 +4,7 @@
 
 clear all; close all;
 
-recalc=true; %premenna ktora urcuje ci data pocitame znova!!!
+recalc=false; %premenna ktora urcuje ci data pocitame znova!!!
 
 %%uvodny check priecinkov na data
 status=0;
@@ -102,14 +102,11 @@ if volumeCount~=sourceCount||recalc==true
                 break;
             end
             if exist('axial','var')&&exist('coronal','var')&&exist('sagital','var')
-                [optimizer,metric]=imregconfig('monomodal');
-                coronal_reg=imregister(coronal,axial,'affine',optimizer,metric);
-                sagital_reg=imregister(sagital,axial,'affine',optimizer,metric);
-                view_a=volshow(axial,"Colormap",cmap,"Alphamap",amap);
-                view_c=volshow(coronal_reg,"Colormap",cmap,"Alphamap",amap);
-                view_s=volshow(sagital_reg,"Colormap",cmap,"Alphamap",amap);
-                niftiwrite(coronal_reg,cor_address);
-                niftiwrite(sagital_reg,sag_address);
+                interpVolume=spatialMatrixInterp(coronal,axial,sagital,cor_address,sag_address);
+%                 view_a=volshow(axial,"Colormap",cmap,"Alphamap",amap);
+%                 view_c=volshow(cor_address,"Colormap",cmap,"Alphamap",amap);
+%                 view_s=volshow(sag_address,"Colormap",cmap,"Alphamap",amap);
+                view_fin=volshow(interpVolume,"Colormap",cmap,"Alphamap",amap);
             end
         else
             fprintf("Nebolo mozne urcit o aky rez ide! Skontrolujte nazov priecinka a spustite spracovanie znovu.\nStlacte akukolvek klavesu pre pokracovanie.\n");
