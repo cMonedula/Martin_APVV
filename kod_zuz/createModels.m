@@ -81,18 +81,18 @@ if volumeCount~=sourceCount||recalc==true
             view=volshow(single,"Colormap",cmap,"Alphamap",amap);
         elseif contains(upper(sourceContent(i).name),'SWI')
             if contains(lower(sourceContent(i).name),'axial')
-                [axial,axial_spatial]=dicomreadVolume(sourceTable,char(sourceTable.Properties.RowNames(i)),'MakeIsotropic',true);
+                [axial,axial_spatial]=dicomreadVolume([sourcePath+'\'+sourceContent(i).name],'MakeIsotropic',true);
                 axial=squeeze(axial);
                 niftiwrite(axial,string(["niiData\"+resultName(i)+".nii"]));
                 % axial=niftiread(string(["niiData\"+resultName(i)]));
             elseif contains(lower(sourceContent(i).name),'coronal')
-                [coronal,coronal_spatial]=dicomreadVolume(sourceTable,char(sourceTable.Properties.RowNames(i)),'MakeIsotropic',true);
+                [coronal,coronal_spatial]=dicomreadVolume([sourcePath+'\'+sourceContent(i).name],'MakeIsotropic',true);
                 coronal=squeeze(coronal);
                 niftiwrite(coronal,string(["niiData\"+resultName(i)+".nii"]));
                 cor_address=string(["niiData\"+resultName(i)+".nii"]);
                 % coronal=niftiread(string(["niiData\"+resultName(i)]));
             elseif contains(lower(sourceContent(i).name),'sagittal')||contains(lower(sourceContent(i).name),'sagital')
-                [sagittal,sagittal_spatial]=dicomreadVolume(sourceTable,char(sourceTable.Properties.RowNames(i)),'MakeIsotropic',true);
+                [sagittal,sagittal_spatial]=dicomreadVolume([sourcePath+'\'+sourceContent(i).name],'MakeIsotropic',true);
                 sagittal=squeeze(sagittal);
                 niftiwrite(sagittal,string(["niiData\"+resultName(i)+".nii"]));
                 sag_address=string(["niiData\"+resultName(i)+".nii"]);
