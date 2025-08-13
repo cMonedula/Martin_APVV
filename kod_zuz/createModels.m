@@ -74,27 +74,27 @@ end
 if volumeCount~=sourceCount||recalc==true
     for i=1:sourceCount
         if contains(sourceContent(i).name,'3D')
-            [single,single_spatial]=dicomreadVolume([sourcePath+'\'+sourceContent(i).name],'MakeIsotropic',true);
+            single=medicalVolume([sourcePath+'\'+sourceContent(i).name]);
             single=squeeze(single);
-            niftiwrite(single,string(["niiData\"+resultName(i)+".nii"]));
+            write(single,string(["niiData\"+resultName(i)+".nii"]));
             % single=niftiread(string(["niiData\"+resultName(i)]));
             view=volshow(single,"Colormap",cmap,"Alphamap",amap);
         elseif contains(upper(sourceContent(i).name),'SWI')
             if contains(lower(sourceContent(i).name),'axial')
-                [axial,axial_spatial]=dicomreadVolume(sourceTable,char(sourceTable.Properties.RowNames(i)),'MakeIsotropic',true);
+                axial=medicalVolume([sourcePath+'\'+sourceContent(i).name]);
                 axial=squeeze(axial);
-                niftiwrite(axial,string(["niiData\"+resultName(i)+".nii"]));
+                write(axial,string(["niiData\"+resultName(i)+".nii"]));
                 % axial=niftiread(string(["niiData\"+resultName(i)]));
             elseif contains(lower(sourceContent(i).name),'coronal')
-                [coronal,coronal_spatial]=dicomreadVolume(sourceTable,char(sourceTable.Properties.RowNames(i)),'MakeIsotropic',true);
+                coronal=medicalVolume([sourcePath+'\'+sourceContent(i).name]);
                 coronal=squeeze(coronal);
-                niftiwrite(coronal,string(["niiData\"+resultName(i)+".nii"]));
+                write(coronal,string(["niiData\"+resultName(i)+".nii"]));
                 cor_address=string(["niiData\"+resultName(i)+".nii"]);
                 % coronal=niftiread(string(["niiData\"+resultName(i)]));
             elseif contains(lower(sourceContent(i).name),'sagittal')||contains(lower(sourceContent(i).name),'sagital')
-                [sagittal,sagittal_spatial]=dicomreadVolume(sourceTable,char(sourceTable.Properties.RowNames(i)),'MakeIsotropic',true);
+                sagittal=medicalVolume([sourcePath+'\'+sourceContent(i).name]);
                 sagittal=squeeze(sagittal);
-                niftiwrite(sagittal,string(["niiData\"+resultName(i)+".nii"]));
+                write(sagittal,string(["niiData\"+resultName(i)+".nii"]));
                 sag_address=string(["niiData\"+resultName(i)+".nii"]);
                 % sagittal=niftiread(string(["niiData\"+resultName(i)]));
             else
