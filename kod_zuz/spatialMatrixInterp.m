@@ -2,7 +2,7 @@ function [interpVolume] = spatialMatrixInterp(axial,coronal,sagittal,cor_address
 %SPATIALMATRIXINTERP tato funkcia obsahuje interpolacnu metodu pre
 %trojrozmerne matice
 %   Detailed explanation goes here
-%% registracia koronalneho a sagittalneho rezu (trva dlho! obcas az ~25 min)
+%% registracia koronalneho a sagitalneho rezu (trva dlho! obcas az ~25 min)
 if needsRegistration==true
     [optimizer,metric]=imregconfig('monomodal');
     optimizer.MaximumStepLength=0.00625;
@@ -32,7 +32,7 @@ max_x=max([size(axial,1),size(coronal,1),size(sagittal,1)]);
 max_y=max([size(axial,2),size(coronal,2),size(sagittal,2)]);
 max_z=max([size(axial,3),size(coronal,3),size(sagittal,3)]);
 
-[x,y,z]=meshgrid(1:res:max_x,1:res:max_y,1:res:max_z);
+[x,y,z]=meshgrid(1:res:max_x,1:res:max_y,1:res:max_y);
 
 %%samotna interpolacia
 interp_axial=interp3(x_ax,y_ax,z_ax,cast(axial,'double'),x,y,z,'makima');
