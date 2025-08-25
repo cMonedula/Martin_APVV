@@ -10,7 +10,14 @@ if needsRegistration==true
     sagittal_reg=imregister(sagittal,axial,'affine',optimizer,metric,'DisplayOptimization',true);
     niftiwrite(coronal_reg,cor_address);
     niftiwrite(sagittal_reg,sag_address);
+    coronal=coronal_reg;
+    sagittal=sagittal_reg;
 end
+
+%% reskalovanie
+axial=rescale(axial);
+coronal=rescale(coronal);
+sagittal=rescale(sagittal);
 
 %% vytvorenie interpolacnej matice
 res=0.5; %interpolacne rozlisenie - 1 je bez zmeny, >1 je zmensenie, <1 je zvacsenie
