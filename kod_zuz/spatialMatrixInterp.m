@@ -3,6 +3,11 @@ function [interpVolume] = spatialMatrixInterp(axial,coronal,sagittal,cor_address
 %trojrozmerne matice
 %   Detailed explanation goes here
 %% registracia koronalneho a sagitalneho rezu (trva dlho! obcas az ~25 min)
+%normalizacia
+% axial=normalize(cast(axial,"double"),"scale");
+% coronal=normalize(cast(coronal,"double"),"scale");
+% sagital=normalize(cast(sagital,"double"),"scale");
+
 if needsRegistration==true
     [optimizer,metric]=imregconfig('monomodal');
     optimizer.MaximumStepLength=0.00625;
