@@ -32,25 +32,25 @@ clear status;
 sourceCount=length(sourceContent); %spocita kolko priecinkov mame (kolko sad obrazkov ideme umiestnovat)
 
 for i=1:sourceCount
-    folderPath=string(sourceContent(i).folder);
-    outputName(i)=string(sourceContent(i).name);
+    sourcePath=string(sourceContent(i).folder);
+    inputName(i)=string(sourceContent(i).name);
 end
-%     folderPath(i)=[string(sourceContent(i).folder)+'\'+string(sourceContent(i).name)+'\'];
-%     folderContent=dir([string(folderPath)+'\*.dcm']); %nacita si obsah priecinku so vstupnymi snimkami
+%     sourcePath(i)=[string(sourceContent(i).folder)+'\'+string(sourceContent(i).name)+'\'];
+%     folderContent=dir([string(sourcePath)+'\*.dcm']); %nacita si obsah priecinku so vstupnymi snimkami
 %     folderContent(1:2)=[]; %vymaze prve dva zbytocne prvky zo zoznamu suborov (. a ..)
 %     snimkaCount=length(folderContent); %zistime kolko toho mame v priecinku
-sourceTable = dicomCollection(folderPath,"IncludeSubfolders",true);
+% sourceTable = dicomCollection(sourcePath,"IncludeSubfolders",true);
 
-for j=1:sourceCount
-sourceTable.Filenames{j,1}(1)=[]; %znizime aliasing eliminaciou prvej a poslednej snimky
-sourceTable.Filenames{j,1}(sourceTable.Frames(j)-1)=[]; %znizime aliasing eliminaciou prvej a poslednej snimky
-sourceTable.Frames(j)=sourceTable.Frames(j)-2; %odoberieme z poctu snimok tie dve
-end
+% for j=1:sourceCount
+%     sourceTable.Filenames{j,1}(1)=[]; %znizime aliasing eliminaciou prvej a poslednej snimky
+%     sourceTable.Filenames{j,1}(sourceTable.Frames(j)-1)=[]; %znizime aliasing eliminaciou prvej a poslednej snimky
+%     sourceTable.Frames(j)=sourceTable.Frames(j)-2; %odoberieme z poctu snimok tie dve
+% end
 
 % for i=1:sourceCount
 %     V=dicomreadVolume(sourceTable,char(sourceTable.Properties.RowNames(i)),"MakeIsotropic",true);
 %     V=squeeze(V);
-%     niftiwrite(V,string(["niiData\"+outputName(i)+".nii"]));
+%     niftiwrite(V,string(["niiData\"+inputName(i)+".nii"]));
 %     clear V;
 % end
 
@@ -66,7 +66,7 @@ volumeList(1:2)=[]; %vymaze prve dva zbytocne prvky zo zoznamu priecinkov (. a .
 volumeCount=length(volumeList);
 
 for i=1:volumeCount
-    folderPath=string(volumeList(i).folder);
+    outputPath=string(volumeList(i).folder);
     resultName(i)=string(volumeList(i).name);
     resultName(i)=erase(resultName(i),".nii");
 end
@@ -74,37 +74,41 @@ end
 if volumeCount~=sourceCount||recalc==true
     for i=1:sourceCount
         if contains(sourceContent(i).name,'3D')
-            single=dicomreadVolume(sourceTable,char(sourceTable.Properties.RowNames(i)),'MakeIsotropic',true);
-            single=cast(squeeze(single),"single");
-            single=normalize(single,"scale");
-            niftiwrite(single,string(["niiData\"+outputName(i)+".nii"]));
-            % single=niftiread(string(["niiData\"+outputName(i)]));
+            [single,single_spatial]=dicomreadVolume([sourcePath+'\'+sourceContent(i).name],'MakeIsotropic',true);
+            single=squeeze(single);
+            niftiwrite(single,string(["niiData\"+resultName(i)+".nii"]));
+            % single=niftiread(string(["niiData\"+resultName(i)]));
             view=volshow(single,"Colormap",cmap,"Alphamap",amap);
-        elseif contains(sourceContent(i).name,upper('SWI'))
-            if contains(sourceContent(i).name,lower('axial'))
-                axial=dicomreadVolume(sourceTable,char(sourceTable.Properties.RowNames(i)),'MakeIsotropic',true);
+        elseif contains(upper(sourceContent(i).name),'SWI')
+            if contains(lower(sourceContent(i).name),'axial')
+                [axial,axial_spatial]=dicomreadVolume([sourcePath+'\'+sourceContent(i).name],'MakeIsotropic',true);
                 axial=squeeze(axial);
-                niftiwrite(axial,string(["niiData\"+outputName(i)+".nii"]));
-                % axial=niftiread(string(["niiData\"+outputName(i)]));
-            elseif contains(sourceContent(i).name,lower('coronal'))
-                coronal=dicomreadVolume(sourceTable,char(sourceTable.Properties.RowNames(i)),'MakeIsotropic',true);
-                coronal=squeeze(coronal);
-                niftiwrite(coronal,string(["niiData\"+outputName(i)+".nii"]));
-                cor_address=string(["niiData\"+outputName(i)+".nii"]);
-                % coronal=niftiread(string(["niiData\"+outputName(i)]));
-            elseif contains(sourceContent(i).name,lower('sagital'))
-                sagital=dicomreadVolume(sourceTable,char(sourceTable.Properties.RowNames(i)),'MakeIsotropic',true);
-                sagital=squeeze(sagital);
-                niftiwrite(sagital,string(["niiData\"+outputName(i)+".nii"]));
-                sag_address=string(["niiData\"+outputName(i)+".nii"]);
-                % sagital=niftiread(string(["niiData\"+outputName(i)]));
+                niftiwrite(axial,string(["niiData\"+resultName(i)+".nii"]));
+                % axial=niftiread(string(["niiData\"+resultName(i)]));
+            elseif contains(lower(sourceContent(i).name),'coronal')
+                [coronal,coronal_spatial]=dicomreadVolume([sourcePath+'\'+sourceContent(i).name],'MakeIsotropic',false);
+                coronal=imrotate3(imresize3(squeeze(coronal),[256 256 120]),90,[1 0 0]);
+                niftiwrite(coronal,string(["niiData\"+resultName(i)+".nii"]));
+                cor_address=string(["niiData\"+resultName(i)+".nii"]);
+                % coronal=niftiread(string(["niiData\"+resultName(i)]));
+            elseif contains(lower(sourceContent(i).name),'sagittal')||contains(lower(sourceContent(i).name),'sagital')
+                [sagittal,sagittal_spatial]=dicomreadVolume([sourcePath+'\'+sourceContent(i).name],'MakeIsotropic',false);
+                sagittal=imresize3(squeeze(sagittal),[256 256 120]);
+                sagittal=imrotate3(sagittal,90,[-1 0 0]);
+                sagittal=imrotate3(sagittal,180,[0 1 0]);
+                sagittal=imrotate3(sagittal,270,[0 0 1]);
+                sagittal=flip(sagittal,1);
+                % sagittal=flip(sagittal,2);
+                niftiwrite(sagittal,string(["niiData\"+resultName(i)+".nii"]));
+                sag_address=string(["niiData\"+resultName(i)+".nii"]);
+                % sagittal=niftiread(string(["niiData\"+resultName(i)]));
             else
                 fprintf("Bolo najdene SWI zobrazenie, nebolo mozne urcit o aky rez ide! Skontrolujte nazov priecinka a spustite spracovanie znovu.\nStlacte akukolvek klavesu pre pokracovanie.\n");
                 pause;
                 break;
             end
-            if exist('axial','var')&&exist('coronal','var')&&exist('sagital','var')
-                interpVolume=spatialMatrixInterp(coronal,axial,sagital,cor_address,sag_address,needsRegistration);
+            if exist('axial','var')&&exist('coronal','var')&&exist('sagittal','var')
+                interpVolume=spatialMatrixInterp(axial,coronal,sagittal,cor_address,sag_address,needsRegistration);
 %                 view_a=volshow(axial,"Colormap",cmap,"Alphamap",amap);
 %                 view_c=volshow(cor_address,"Colormap",cmap,"Alphamap",amap);
 %                 view_s=volshow(sag_address,"Colormap",cmap,"Alphamap",amap);
