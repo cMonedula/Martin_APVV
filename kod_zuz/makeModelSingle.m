@@ -4,6 +4,7 @@ function [single] = makeModelSingle(sourcePath,sourceContent,resultName)
 
 single=dicomreadVolume([sourcePath+'\'+sourceContent],'MakeIsotropic',true);
 single=squeeze(single);
+single=normalizeData(single);
 niftiwrite(single,string(["niiData\"+resultName+".nii"]));
 % single=niftiread(string(["niiData\"+resultName(i)]));
 end

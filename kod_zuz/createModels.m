@@ -54,33 +54,7 @@ if volumeCount~=sourceCount||recalc==true
             single=makeModelSingle(sourcePath,sourceContent(i).name,resultName(i));
             view=volshow(single,"Colormap",cmap,"Alphamap",amap);
         elseif contains(upper(sourceContent(i).name),'SWI')
-            if contains(lower(sourceContent(i).name),'axial')
-                [axial,axial_spatial]=dicomreadVolume([sourcePath+'\'+sourceContent(i).name],'MakeIsotropic',true);
-                axial=squeeze(axial);
-                niftiwrite(axial,string(["niiData\"+resultName(i)+".nii"]));
-                % axial=niftiread(string(["niiData\"+resultName(i)]));
-            elseif contains(lower(sourceContent(i).name),'coronal')
-                [coronal,coronal_spatial]=dicomreadVolume([sourcePath+'\'+sourceContent(i).name],'MakeIsotropic',false);
-                coronal=imrotate3(imresize3(squeeze(coronal),[256 256 120]),90,[1 0 0]);
-                niftiwrite(coronal,string(["niiData\"+resultName(i)+".nii"]));
-                cor_address=string(["niiData\"+resultName(i)+".nii"]);
-                % coronal=niftiread(string(["niiData\"+resultName(i)]));
-            elseif contains(lower(sourceContent(i).name),'sagittal')||contains(lower(sourceContent(i).name),'sagital')
-                [sagittal,sagittal_spatial]=dicomreadVolume([sourcePath+'\'+sourceContent(i).name],'MakeIsotropic',false);
-                sagittal=imresize3(squeeze(sagittal),[256 256 120]);
-                sagittal=imrotate3(sagittal,90,[-1 0 0]);
-                sagittal=imrotate3(sagittal,180,[0 1 0]);
-                sagittal=imrotate3(sagittal,270,[0 0 1]);
-                sagittal=flip(sagittal,1);
-                % sagittal=flip(sagittal,2);
-                niftiwrite(sagittal,string(["niiData\"+resultName(i)+".nii"]));
-                sag_address=string(["niiData\"+resultName(i)+".nii"]);
-                % sagittal=niftiread(string(["niiData\"+resultName(i)]));
-            else
-                fprintf("Bolo najdene SWI zobrazenie, nebolo mozne urcit o aky rez ide! Skontrolujte nazov priecinka a spustite spracovanie znovu.\nStlacte akukolvek klavesu pre pokracovanie.\n");
-                pause;
-                break;
-            end
+            [axial,coronal,cor_address,sagittal,sag_address] = makeModelMultiple(sourcePath,sourceContent,resultName);
             if exist('axial','var')&&exist('coronal','var')&&exist('sagittal','var')
                 interpVolume=spatialMatrixInterp(axial,coronal,sagittal,cor_address,sag_address,needsRegistration);
 %                 view_a=volshow(axial,"Colormap",cmap,"Alphamap",amap);
