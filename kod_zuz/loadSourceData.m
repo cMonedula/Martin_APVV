@@ -1,4 +1,4 @@
-function [sourceContent] = loadSourceData()
+function [sourceContent,sourcePath,inputName] = loadSourceData()
 %LOADSOURCEDATA does exactly what it says on the tin
 %   Detailed explanation goes here
 
@@ -22,5 +22,12 @@ if status==0||sum([sourceContent.isdir])==0
     return
 end
 clear status;
+
+sourceCount=length(sourceContent); %spocita kolko priecinkov mame (kolko sad obrazkov mame k dispozicii)
+
+for i=1:sourceCount
+    sourcePath=string(sourceContent(i).folder);
+    inputName(i)=string(sourceContent(i).name);
+end
 end
 

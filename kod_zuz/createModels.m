@@ -8,15 +8,9 @@ recalc=true; %premenna ktora urcuje ci data pocitame znova!!!
 needsRegistration=true; %debug premenna na preskocenie registracie
 
 %%uvodny check priecinkov na data
-sourceContent=loadSourceData();
+[sourceContent,sourcePath,inputName]=loadSourceData();
 
 %% toto si snimky nacita, umiestni a vytvori volume subor
-sourceCount=length(sourceContent); %spocita kolko priecinkov mame (kolko sad obrazkov ideme umiestnovat)
-
-for i=1:sourceCount
-    sourcePath=string(sourceContent(i).folder);
-    inputName(i)=string(sourceContent(i).name);
-end
 %     sourcePath(i)=[string(sourceContent(i).folder)+'\'+string(sourceContent(i).name)+'\'];
 %     folderContent=dir([string(sourcePath)+'\*.dcm']); %nacita si obsah priecinku so vstupnymi snimkami
 %     folderContent(1:2)=[]; %vymaze prve dva zbytocne prvky zo zoznamu suborov (. a ..)
@@ -56,10 +50,7 @@ end
 if volumeCount~=sourceCount||recalc==true
     for i=1:sourceCount
         if contains(sourceContent(i).name,'3D')
-            [single,single_spatial]=dicomreadVolume([sourcePath+'\'+sourceContent(i).name],'MakeIsotropic',true);
-            single=squeeze(single);
-            niftiwrite(single,string(["niiData\"+resultName(i)+".nii"]));
-            % single=niftiread(string(["niiData\"+resultName(i)]));
+            single=makeModelSingle(sourcePath,sourceContent(i).name,resultName(i));
             view=volshow(single,"Colormap",cmap,"Alphamap",amap);
         elseif contains(upper(sourceContent(i).name),'SWI')
             if contains(lower(sourceContent(i).name),'axial')
