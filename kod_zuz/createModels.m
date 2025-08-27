@@ -9,6 +9,7 @@ needsRegistration=true; %debug premenna na preskocenie registracie
 
 %%uvodny check priecinkov na data
 [sourceContent,sourcePath,inputName]=loadSourceData();
+sourceCount=length(sourceContent);
 
 %% toto si snimky nacita, umiestni a vytvori volume subor
 %     sourcePath(i)=[string(sourceContent(i).folder)+'\'+string(sourceContent(i).name)+'\'];
