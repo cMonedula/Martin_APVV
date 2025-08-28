@@ -22,7 +22,7 @@ intensities = intensities(mask);
 % Marker size scales with intensity (brighter = larger)
 markerSizes = 1+multiplier*sample*intensities;  % adjust scaling factor as needed
 
-figureData=scatter3(where,x,y,z,markerSizes,intensities,'square','filled');
+figureData=scatter3(where,x,y,z,markerSizes,intensities,'filled');
 % axis([1 size(modelInput,1) 1 size(modelInput,2) 1 size(modelInput,3)]);
 axis(where,'equal');
 xlabel(where,'X'); ylabel(where,'Y'); zlabel(where,'Z');
