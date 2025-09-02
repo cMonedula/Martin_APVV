@@ -1,4 +1,4 @@
-function [sourceContent,sourcePath,inputName] = loadSourceData()
+function [sourceContent,sourcePath,inputName,volumeContent,volumePath,volumeName] = loadSourceData()
 %LOADSOURCEDATA does exactly what it says on the tin
 %   Detailed explanation goes here
 
@@ -28,6 +28,16 @@ sourceCount=length(sourceContent); %spocita kolko priecinkov mame (kolko sad obr
 for i=1:sourceCount
     sourcePath=string(sourceContent(i).folder);
     inputName(i)=string(sourceContent(i).name);
+end
+
+volumeContent=dir('niiData'); %nacita si obsah priecinku so spracovanymi volume datami
+volumeContent(1:2)=[]; %vymaze prve dva zbytocne prvky zo zoznamu priecinkov (. a ..)
+volumeCount=length(volumeContent);
+
+for i=1:volumeCount
+    volumePath=string(volumeContent(i).folder);
+    volumeName(i)=string(volumeContent(i).name);
+    volumeName(i)=erase(volumeName(i),".nii");
 end
 end
 

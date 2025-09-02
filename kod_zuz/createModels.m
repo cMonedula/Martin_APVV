@@ -38,16 +38,6 @@ queryPoints = linspace(min(intensity),max(intensity),256);
 amap = interp1(intensity,alpha,queryPoints)';
 cmap = interp1(intensity,color,queryPoints);
 
-volumeList=dir('niiData'); %nacita si obsah priecinku so spracovanymi volume datami
-volumeList(1:2)=[]; %vymaze prve dva zbytocne prvky zo zoznamu priecinkov (. a ..)
-volumeCount=length(volumeList);
-
-for i=1:volumeCount
-    outputPath=string(volumeList(i).folder);
-    resultName(i)=string(volumeList(i).name);
-    resultName(i)=erase(resultName(i),".nii");
-end
-
 if volumeCount~=sourceCount||recalc==true
     for i=1:sourceCount
         if contains(sourceContent(i).name,'3D')

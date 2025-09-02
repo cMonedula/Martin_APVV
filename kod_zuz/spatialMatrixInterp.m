@@ -1,4 +1,4 @@
-function [interpVolume] = spatialMatrixInterp(axial,coronal,sagittal,cor_address,sag_address,needsRegistration)
+function [interpVolume] = spatialMatrixInterp(axial,coronal,sagittal,cor_address,sag_address,interp_address,needsRegistration)
 %SPATIALMATRIXINTERP tato funkcia obsahuje interpolacnu metodu pre
 %trojrozmerne matice
 %   Detailed explanation goes here
@@ -46,5 +46,6 @@ interp_sagittal = interp3(cast(sagittal,'double'),x,y,z,'makima');
 
 interpVolume=(interp_axial+interp_coronal+interp_sagittal)/3;
 interpVolume=normalizeData(interpVolume);
+niftiwrite(interpVolume,interp_address);
 end
 
