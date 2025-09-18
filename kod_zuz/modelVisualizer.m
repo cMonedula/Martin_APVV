@@ -1,4 +1,4 @@
-function [figureData] = modelVisualizer(modelInput,sample,multiplier,where,alphaThreshold)
+function [figureData] = modelVisualizer(modelInput,sample,multiplier,where,alphaThreshold,cmap)
 %MODELVISUALIZER moj maly plotik
 %   pozor, zere pamat horsie ako alzheimer
 
@@ -26,7 +26,8 @@ figureData=scatter3(where,x,y,z,markerSizes,intensities,'filled');
 % axis([1 size(modelInput,1) 1 size(modelInput,2) 1 size(modelInput,3)]);
 axis(where,'equal');
 xlabel(where,'X'); ylabel(where,'Y'); zlabel(where,'Z');
-colormap(where,'gray'); colorbar(where,'southoutside');
+colormap(where,cmap);
+colorbar(where,'southoutside');
 % title(where,'3D MRI so simulovanou priehladnostou');
 title(where,'');
 set(where,'Color','k');  %cierne pozadie
