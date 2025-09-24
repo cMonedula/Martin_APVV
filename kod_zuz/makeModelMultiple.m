@@ -48,6 +48,7 @@ for i=1:length(sourceContent)
             coronal=dicomreadVolume([sourcePath+'\'+sourceContent(i)],'MakeIsotropic',false);
         end
         coronal=imrotate3(imresize3(squeeze(coronal),[256 256 120]),90,[1 0 0]);
+%         coronal=flip(coronal,3);
         coronal=normalizeData(coronal);
         niftiwrite(coronal,string(["niiData\"+resultName(i)+".nii"]));
         cor_address=string(["niiData\"+resultName(i)+".nii"]);
@@ -75,9 +76,9 @@ for i=1:length(sourceContent)
         sagittal=imrotate3(sagittal,90,[-1 0 0]);
         sagittal=imrotate3(sagittal,180,[0 1 0]);
         sagittal=imrotate3(sagittal,270,[0 0 1]);
-        sagittal=flip(sagittal,1);
+%         sagittal=flip(sagittal,1);
         sagittal=normalizeData(sagittal);
-        % sagittal=flip(sagittal,2);
+%         sagittal=flip(sagittal,3);
         niftiwrite(sagittal,string(["niiData\"+resultName(i)+".nii"]));
         sag_address=string(["niiData\"+resultName(i)+".nii"]);
         % sagittal=niftiread(string(["niiData\"+resultName(i)]));
