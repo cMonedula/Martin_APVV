@@ -8,33 +8,10 @@ recalc=true; %premenna ktora urcuje ci data pocitame znova!!!
 needsRegistration=true; %debug premenna na preskocenie registracie
 
 %%uvodny check priecinkov na data
-status=0;
-while status==0
-    status=mkdir('pointCloudData'); %vytvori priecinok na ukladanie dat ktore ziskame ako vystup z tohto skriptu
-end
-
-status=0;
-while status==0
-    status=mkdir('niiData'); %vytvori priecinok na ukladanie volume vystupov vo formate .nii
-end
-
-status=mkdir('sourceData'); %vytvori priecinok kam idu data s ktorymi pracujeme, ak este neexistuje
-sourceContent=dir('sourceData'); %nacita si obsah priecinku so vstupnymi datami
-sourceContent(1:2)=[]; %vymaze prve dva zbytocne prvky zo zoznamu priecinkov (. a ..)
-if status==0||sum([sourceContent.isdir])==0
-    fprintf('Skript sa ukonci kvoli chybajucim vstupnym datam.\nNaplnte vstupny priecinok sourceData DICOM snimkami v prislusnych podpriecinkoch a znovu spustite skript.\nPre pokracovanie stlacte akukolvek klavesu.\n');
-    pause;
-    return
-end
-clear status;
+[sourceContent,sourcePath,inputName]=loadSourceData();
+sourceCount=length(sourceContent);
 
 %% toto si snimky nacita, umiestni a vytvori volume subor
-sourceCount=length(sourceContent); %spocita kolko priecinkov mame (kolko sad obrazkov ideme umiestnovat)
-
-for i=1:sourceCount
-    sourcePath=string(sourceContent(i).folder);
-    inputName(i)=string(sourceContent(i).name);
-end
 %     sourcePath(i)=[string(sourceContent(i).folder)+'\'+string(sourceContent(i).name)+'\'];
 %     folderContent=dir([string(sourcePath)+'\*.dcm']); %nacita si obsah priecinku so vstupnymi snimkami
 %     folderContent(1:2)=[]; %vymaze prve dva zbytocne prvky zo zoznamu suborov (. a ..)
@@ -61,52 +38,13 @@ queryPoints = linspace(min(intensity),max(intensity),256);
 amap = interp1(intensity,alpha,queryPoints)';
 cmap = interp1(intensity,color,queryPoints);
 
-volumeList=dir('niiData'); %nacita si obsah priecinku so spracovanymi volume datami
-volumeList(1:2)=[]; %vymaze prve dva zbytocne prvky zo zoznamu priecinkov (. a ..)
-volumeCount=length(volumeList);
-
-for i=1:volumeCount
-    outputPath=string(volumeList(i).folder);
-    resultName(i)=string(volumeList(i).name);
-    resultName(i)=erase(resultName(i),".nii");
-end
-
 if volumeCount~=sourceCount||recalc==true
     for i=1:sourceCount
         if contains(sourceContent(i).name,'3D')
-            [single,single_spatial]=dicomreadVolume([sourcePath+'\'+sourceContent(i).name],'MakeIsotropic',true);
-            single=squeeze(single);
-            niftiwrite(single,string(["niiData\"+resultName(i)+".nii"]));
-            % single=niftiread(string(["niiData\"+resultName(i)]));
+            single=makeModelSingle(sourcePath,sourceContent(i).name,resultName(i));
             view=volshow(single,"Colormap",cmap,"Alphamap",amap);
         elseif contains(upper(sourceContent(i).name),'SWI')
-            if contains(lower(sourceContent(i).name),'axial')
-                [axial,axial_spatial]=dicomreadVolume([sourcePath+'\'+sourceContent(i).name],'MakeIsotropic',true);
-                axial=squeeze(axial);
-                niftiwrite(axial,string(["niiData\"+resultName(i)+".nii"]));
-                % axial=niftiread(string(["niiData\"+resultName(i)]));
-            elseif contains(lower(sourceContent(i).name),'coronal')
-                [coronal,coronal_spatial]=dicomreadVolume([sourcePath+'\'+sourceContent(i).name],'MakeIsotropic',false);
-                coronal=imrotate3(imresize3(squeeze(coronal),[256 256 120]),90,[1 0 0]);
-                niftiwrite(coronal,string(["niiData\"+resultName(i)+".nii"]));
-                cor_address=string(["niiData\"+resultName(i)+".nii"]);
-                % coronal=niftiread(string(["niiData\"+resultName(i)]));
-            elseif contains(lower(sourceContent(i).name),'sagittal')||contains(lower(sourceContent(i).name),'sagital')
-                [sagittal,sagittal_spatial]=dicomreadVolume([sourcePath+'\'+sourceContent(i).name],'MakeIsotropic',false);
-                sagittal=imresize3(squeeze(sagittal),[256 256 120]);
-                sagittal=imrotate3(sagittal,90,[-1 0 0]);
-                sagittal=imrotate3(sagittal,180,[0 1 0]);
-                sagittal=imrotate3(sagittal,270,[0 0 1]);
-                sagittal=flip(sagittal,1);
-                % sagittal=flip(sagittal,2);
-                niftiwrite(sagittal,string(["niiData\"+resultName(i)+".nii"]));
-                sag_address=string(["niiData\"+resultName(i)+".nii"]);
-                % sagittal=niftiread(string(["niiData\"+resultName(i)]));
-            else
-                fprintf("Bolo najdene SWI zobrazenie, nebolo mozne urcit o aky rez ide! Skontrolujte nazov priecinka a spustite spracovanie znovu.\nStlacte akukolvek klavesu pre pokracovanie.\n");
-                pause;
-                break;
-            end
+            [axial,coronal,cor_address,sagittal,sag_address] = makeModelMultiple(sourcePath,sourceContent,resultName);
             if exist('axial','var')&&exist('coronal','var')&&exist('sagittal','var')
                 interpVolume=spatialMatrixInterp(axial,coronal,sagittal,cor_address,sag_address,needsRegistration);
 %                 view_a=volshow(axial,"Colormap",cmap,"Alphamap",amap);

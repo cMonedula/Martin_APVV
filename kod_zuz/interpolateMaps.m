@@ -1,26 +1,6 @@
-function [interpVolume] = spatialMatrixInterp(axial,coronal,sagittal,cor_address,sag_address,interp_address,needsRegistration)
-%SPATIALMATRIXINTERP tato funkcia obsahuje interpolacnu metodu pre
-%trojrozmerne matice
+function [interpVolume] = interpolateMaps(axial,coronal,sagittal,interp_address)
+%UNTITLED2 Summary of this function goes here
 %   Detailed explanation goes here
-%% registracia koronalneho a sagitalneho rezu (trva dlho! obcas az ~25 min)
-%normalizacia
-% axial=normalize(cast(axial,"double"),"scale");
-% coronal=normalize(cast(coronal,"double"),"scale");
-% sagital=normalize(cast(sagital,"double"),"scale");
-
-if needsRegistration==true
-    [optimizer,metric]=imregconfig('monomodal');
-    optimizer.MaximumStepLength=0.00625;
-    coronal_reg=imregister(coronal,axial,'affine',optimizer,metric,'DisplayOptimization',true);
-    sagittal_reg=imregister(sagittal,axial,'affine',optimizer,metric,'DisplayOptimization',true);
-    niftiwrite(coronal_reg,cor_address);
-    niftiwrite(sagittal_reg,sag_address);
-    coronal=coronal_reg;
-    sagittal=sagittal_reg;
-end
-
-[axial,coronal,sagittal]=normalizeData(axial,coronal,sagittal);
-
 %% vytvorenie interpolacnej matice
 res=1; %interpolacne rozlisenie - 1 je bez zmeny, >1 je zmensenie, <1 je zvacsenie
 
