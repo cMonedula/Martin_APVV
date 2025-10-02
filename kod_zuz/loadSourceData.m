@@ -10,10 +10,6 @@ volumePath = '';
 % volumeName = [];
 
 %% uvodny check priecinkov na data
-status=0;
-while status==0
-    status=mkdir('pointCloudData'); %vytvori priecinok na ukladanie dat ktore ziskame ako vystup z tohto skriptu
-end
 
 status=0;
 while status==0
