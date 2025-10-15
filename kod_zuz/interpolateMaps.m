@@ -1,4 +1,4 @@
-function [Volume] = interpolateMaps(axial,coronal,sagittal,interp_address)
+function [interpVolume] = interpolateMaps(axial,coronal,sagittal,interp_address)
 %UNTITLED2 Summary of this function goes here
 %   Detailed explanation goes here
 %% vytvorenie interpolacnej matice
@@ -20,15 +20,15 @@ max_z=max([size(axial,3),size(coronal,3),size(sagittal,3)]);
 % interp_axial=interp3(x_ax,y_ax,z_ax,cast(axial,'double'),x,y,z,'makima');
 % interp_coronal=interp3(x_cor,y_cor,z_cor,cast(coronal,'double'),x,y,z,'makima');
 % interp_sagittal=interp3(x_sag,y_sag,z_sag,cast(sagittal,'double'),x,y,z,'makima');
-% interp_axial = interp3(cast(axial,'double'),x,y,z,'makima');
-% interp_coronal = interp3(cast(coronal,'double'),x,y,z,'makima');
-% interp_sagittal = interp3(cast(sagittal,'double'),x,y,z,'makima');
-% 
-% interpVolume=(interp_axial+interp_coronal+interp_sagittal)/3;
-% interpVolume=normalizeData(interpVolume);
+interp_axial = interp3(cast(axial,'double'),x,y,z,'makima');
+interp_coronal = interp3(cast(coronal,'double'),x,y,z,'makima');
+interp_sagittal = interp3(cast(sagittal,'double'),x,y,z,'makima');
 
-Volume=(axial+coronal+sagittal)/3;
-Volume=normalizeData(Volume);
-niftiwrite(Volume,interp_address);
+interpVolume=(interp_axial+interp_coronal+interp_sagittal)/3;
+interpVolume=normalizeData(interpVolume);
+
+% Volume=(axial+coronal+sagittal)/3;
+% Volume=normalizeData(Volume);
+niftiwrite(interpVolume,interp_address);
 end
 
