@@ -33,5 +33,5 @@ else
     rgb_matrix = interp1(linspace(min_val, max_val, 256), cmap_function, intensities);
 end
 
-figureData=scatter3(where,x,y,z,markerSizes,rgb_matrix,'filled');
+figureData=scatter3(where,x,y,z,markerSizes,rgb_matrix,'MarkerFaceColor','flat');
 end
