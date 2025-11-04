@@ -40,9 +40,9 @@ max_z=max([size(axial,3),size(coronal,3),size(sagittal,3)]);
 % interp_axial=interp3(x_ax,y_ax,z_ax,cast(axial,'double'),x,y,z,'makima');
 % interp_coronal=interp3(x_cor,y_cor,z_cor,cast(coronal,'double'),x,y,z,'makima');
 % interp_sagittal=interp3(x_sag,y_sag,z_sag,cast(sagittal,'double'),x,y,z,'makima');
-interp_axial = interp3(cast(axial,'double'),x,y,z,'makima');
-interp_coronal = interp3(cast(coronal,'double'),x,y,z,'makima');
-interp_sagittal = interp3(cast(sagittal,'double'),x,y,z,'makima');
+interp_axial = interp3(axial,x,y,z,'makima');
+interp_coronal = interp3(coronal,x,y,z,'makima');
+interp_sagittal = interp3(sagittal,x,y,z,'makima');
 
 interpVolume=(interp_axial+interp_coronal+interp_sagittal)/3;
 interpVolume=normalizeData(interpVolume);
