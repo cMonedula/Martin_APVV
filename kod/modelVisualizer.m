@@ -5,8 +5,7 @@ function hScatter = modelVisualizer(modelInput, X_grid, Y_grid, Z_grid, target, 
 %     X_grid, Y_grid, Z_grid - Priestorové súradnice z DICOMPlanesToVolume
 %     target - Rukoväť na konkrétne osi (app.UIAxes)
 %     properties - Štruktúra s nastaveniami
-%     useGPU - Logická premenná pre zapnutie grafickej karty
-
+%     useGPU - Logická premenná pre zapnutie Parallel Computing Toolboxu
 arguments
     modelInput
     X_grid
