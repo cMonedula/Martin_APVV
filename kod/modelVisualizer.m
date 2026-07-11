@@ -12,7 +12,7 @@ arguments
     Y_grid
     Z_grid
     target
-    properties = struct('cull',4,'maskThreshold',0,'multiplier',10,'cmapName',"gray")
+    properties = struct('cull',4,'maskThreshold',0,'multiplier',10,'cmapName',"gray",'markerBaseSize',1)
     useGPU = false
 end
 
@@ -34,6 +34,7 @@ end
 if ~isfield(properties,'cull'), properties.cull = 4; end
 if ~isfield(properties,'maskThreshold'), properties.maskThreshold = 0; end
 if ~isfield(properties,'multiplier'), properties.multiplier = 10; end
+if ~isfield(properties,'markerBaseSize'), properties.markerBaseSize = 1; end
 if ~isfield(properties,'cmapName'), properties.cmapName = "gray"; end
 
 %% --- Sampling grid (FYZICKÉ SÚRADNICE) ---
@@ -62,7 +63,7 @@ intensities = intensities(mask);
 
 %% --- Marker size scaling ---
 % markerSizes = 1 + properties.multiplier * properties.cull * intensities;
-markerSizes = 5;
+markerSizes = properties.markerBaseSize;
 
 %% --- Colormap mapping ---
 % Poistka pre britskú vs americkú angličtinu (MATLAB uprednostňuje gray)
@@ -100,8 +101,6 @@ hScatter = scatter3(target, x, y, z, ...
     'MarkerFaceColor', 'flat', ...
     'MarkerEdgeColor', 'none'); % Vypnutie mriežky okolo bodov pre čistejší oblak
 
-% --- PRIDANÉ: Fyzikálne zrovnanie osí ---
 axis(target, 'equal'); % Zabezpečí, že milimeter na X = milimeter na Z
-% axis(target, 'tight'); % Oreže prázdny priestor
 
 end

@@ -27,7 +27,7 @@ end
 
 info = dicominfo(dicom_filenames{1});
 
-% Získaj reálnu veľkosť pixelov v mm (vráti pole [rozstup_riadkov; rozstup_stĺpcov])
+% Získava reálnu veľkosť pixelov v mm (vráti pole [rozstup_riadkov; rozstup_stĺpcov])
 rozmery_pixelov = info.PixelSpacing;
 
 % Pre náš 3D priestor vyberieme najmenší rozmer, aby sme nestratili žiadne detaily
@@ -64,14 +64,14 @@ for i = 1:num_files
     Y = pos(2) + C .* ps(2) .* row_dir(2) + R .* ps(1) .* col_dir(2);
     Z = pos(3) + C .* ps(2) .* row_dir(3) + R .* ps(1) .* col_dir(3);
 
-    % Prevedieme matice na stĺpcové vektory a pridáme do globálneho zoznamu
+    % Prevod matice na stĺpcové vektory
     all_X = [all_X; X(:)];
     all_Y = [all_Y; Y(:)];
     all_Z = [all_Z; Z(:)];
     all_I = [all_I; img(:)];
 end
 
-logMsg('Vytváram 3D mriežku (Voxel space)...');
+logMsg('Vytváram 3D mriežku (voxel space)...');
 % Určenie rozmerov (Bounding box) celého priestoru
 min_X = min(all_X); max_X = max(all_X);
 min_Y = min(all_Y); max_Y = max(all_Y);
@@ -83,26 +83,17 @@ y_vec = min_Y : voxel_size : max_Y;
 z_vec = min_Z : voxel_size : max_Z;
 [X_grid, Y_grid, Z_grid] = meshgrid(x_vec, y_vec, z_vec);
 
-% Zistíme rozmery našej novej 3D mriežky a predalokujeme ju NaN hodnotami
+% Predalokovanie 3D mriežky NaN hodnotami
 [rows, cols, depths] = size(X_grid);
 Volume = NaN(rows, cols, depths);
 
 if use_interpolation
-    logMsg('Pripravujem interpolovaný model...');
-    % Tvorba modelu beží na jednom jadre
+    logMsg('Pripravujem interpolovaný model (scatteredInterpolant)...');
     F = scatteredInterpolant(all_X, all_Y, all_Z, all_I, 'linear', 'none');
 
-    logMsg('Dopočítavam súvislý 3D objem paralelne (parfor)...');
-    % Paralelný výpočet vrstvu po vrstve
-    parfor z = 1:depths
-        % Extrakcia 2D súradníc pre jednu Z-vrstvu mriežky
-        X_slice = X_grid(:,:,z);
-        Y_slice = Y_grid(:,:,z);
-        Z_slice = Z_grid(:,:,z);
-
-        % Vypočítame a zapíšeme iba túto jednu vrstvu
-        Volume(:,:,z) = F(X_slice, Y_slice, Z_slice);
-    end
+    logMsg('Dopočítavam súvislý 3D objem (vektorizovane)...');
+    % Vyhodnotí úplne všetko naraz bez parfor
+    Volume = F(X_grid, Y_grid, Z_grid);
 
 else
     logMsg('Mapujem reálne dáta do 3D objemu...');

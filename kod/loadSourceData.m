@@ -63,7 +63,7 @@ if volumeCount > 0
     for i = 1:volumeCount
         volumePath = string(volumeContent(i).folder);
         volumeName(i) = string(volumeContent(i).name);
-        volumeName(i) = erase(volumeName(i),".nii");
+        volumeName(i) = erase(volumeName(i),".mat");
     end
 
     logMsg("Uložené modely boli úspešne načítané.")

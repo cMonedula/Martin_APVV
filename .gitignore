@@ -1,4 +1,5 @@
-
 *.asv
-kod_zuz/test_export
-kod_zuz/sample.mat
+kod/test_export
+kod/sample.mat
+kod/sourceData
+kod/savedData
