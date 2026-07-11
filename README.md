@@ -19,7 +19,7 @@ Po naplnení priečinku `sourceData` môžete prejsť k tvorbe modelu. TBA
     - priečinok obsahujúci DICOM snímky
       - 01.dcm, 02.dcm, 03.dcm... (na pomenovaní nezáleží, jediná podmienka je, že snímky musia mať kompletné pozičné metedáta)
   - *savedData*
-    - meno.nii (uložené dáta pomenované používateľom)
+    - meno.mat (uložené dáta pomenované používateľom)
 
 [^1]: Ronald Ouwerkerk (2026). MRI slice viewer (https://www.mathworks.com/matlabcentral/fileexchange/27869-mri-slice-viewer), MATLAB Central File Exchange. Retrieved July 4, 2026. 
 [^2]: Compatibility Between Different Releases of App Designer (https://www.mathworks.com/help/matlab/creating_guis/compatibility-between-different-releases-of-app-designer.html), MATLAB Help Center. Retrieved July 6, 2026.
