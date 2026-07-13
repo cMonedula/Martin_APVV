@@ -12,7 +12,7 @@ arguments
     Y_grid
     Z_grid
     target
-    properties = struct('cull',4,'maskThreshold',0,'multiplier',10,'cmapName',"gray",'markerBaseSize',1)
+    properties = struct('cull',4,'maskThreshold',0,'multiplier',10,'cmapName',"gray",'markerBaseSize',1,'marker','o')
     useGPU = false
 end
 
@@ -36,6 +36,7 @@ if ~isfield(properties,'maskThreshold'), properties.maskThreshold = 0; end
 if ~isfield(properties,'multiplier'), properties.multiplier = 10; end
 if ~isfield(properties,'markerBaseSize'), properties.markerBaseSize = 1; end
 if ~isfield(properties,'cmapName'), properties.cmapName = "gray"; end
+if ~isfield(properties,'marker'), properties.marker = 'o'; end
 
 %% --- Sampling grid (FYZICKÉ SÚRADNICE) ---
 % Namiesto umelého ndgrid podvzorkujeme priamo reálne DICOM milimetre
@@ -83,7 +84,8 @@ end
 if minVal == maxVal
     rgb = repmat(cmap(end,:), numel(intensities), 1);
 else
-    rgb = interp1(linspace(minVal, maxVal, 256), cmap, intensities, 'linear');
+    % rgb = interp1(linspace(minVal, maxVal, 256), cmap, intensities, 'linear');
+    rgb = interp1(linspace(0, 1, 256), cmap, intensities, 'linear');
 end
 
 %% parcomp gather
@@ -97,7 +99,7 @@ end
 hScatter = scatter3(target, x, y, z, ...
     'SizeData', markerSizes, ...
     'CData', rgb, ...
-    'Marker', 's', ...
+    'Marker', properties.marker, ...
     'MarkerFaceColor', 'flat', ...
     'MarkerEdgeColor', 'none'); % Vypnutie mriežky okolo bodov pre čistejší oblak
 
