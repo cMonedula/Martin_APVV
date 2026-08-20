@@ -19,8 +19,12 @@ Po naplnení priečinku `sourceData` môžete prejsť k tvorbe modelu. Používa
 <img width="731" height="529" alt="gui" src="https://github.com/user-attachments/assets/54c036f5-8b9b-47a3-92d7-ef69b80c9ede" />
 
 Ľavý panel, záložka Zobrazenie, sa skladá z prvkov:
-1a) Opätovné načítanie obsahu `sourceData` a `savedData`
-1b) WIP
+1) a) Opätovné načítanie obsahu `sourceData` a `savedData` b) znovu načítať zobrazenie
+2) Zoznam dostupných sád snímok = priečinky v `sourceData`
+3) Výber snímok -- predvolene nemá vyplnené hodnoty, teda sa nepoužíva (rozsah je 1:end s krokom 1 (všetko v priečinku)). Hodnoty, ktoré vyplníte, budú použité (teda pokiaľ zmeníte iba krok, rozsah bude stále 1:end).
+4) Interpolácia má momentálne iba jednu dostupnú metódu, a to scatteredInterpolant -- ten je postačujúci pre prakticky všetky prípady, kedy je vhodné mať celistvú snímku. Tlačidlom Vytvoriť model spustíte proces tvorby modelu na základe vybraných dát (2) a zadaných hodnôt (3). Pre uloženie modelu na neskoršie použitie vyplňte meno a stlačte Uložiť model -- výsledok vášho snaženia bude v najvyššom možnom rozlíšení (= rozlíšenie vstupných snímok) uložený do `savedData` ako .mat súbor.
+> [!TIP]
+> Pri prekladaní mapami interpoláciu **vypnite**. Skresľuje výsledné dáta.
 
 <img width="391" height="839" alt="ui1" src="https://github.com/user-attachments/assets/dd0dc893-1875-4c34-8668-7886dd107473" />
 
