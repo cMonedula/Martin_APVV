@@ -33,7 +33,7 @@ rozmery_pixelov = info.PixelSpacing;
 % Pre náš 3D priestor vyberieme najmenší rozmer, aby sme nestratili žiadne detaily
 voxel_size = min(rozmery_pixelov);
 
-logMsg(['Automaticky zistená veľkosť voxelu: ', num2str(voxel_size), ' mm']);
+logMsg(['Zistená veľkosť voxelu: ', num2str(voxel_size), ' mm']);
 
 num_files = length(dicom_filenames);
 
